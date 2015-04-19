@@ -10,9 +10,14 @@ namespace XianServer.Network
     {
         public const int Seed = 0x1337;
 
+        public static void Cipher(byte[] buffer, int start, int length)
+        {
+            for (int i = start; i < length; i++)
+                buffer[i] ^= 69;
+        }
+
         public static void Encrypt(byte[] data, int seed)
         {
-#if FAGGOT
             int len = data.Length;
 
             byte[] seedKey = BitConverter.GetBytes(seed);
@@ -35,11 +40,9 @@ namespace XianServer.Network
                 data[i] = input;
                 round++;
             }
-#endif
         }
         public static void Decrypt(byte[] data, int seed)
         {
-#if FAGGOT
             int len = data.Length;
 
             byte[] seedKey = BitConverter.GetBytes(seed);
@@ -64,7 +67,6 @@ namespace XianServer.Network
 
                 round++;
             }
-#endif
         }
     }
 }

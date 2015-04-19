@@ -14,20 +14,22 @@ namespace XianServer.Packet
     {
         public static void HandleLoginRequest(Client c, BufferReader p)
         {
-            c.Hwid = p.ReadMapleString();
+            string hwid = p.ReadMapleString();
             byte region = p.ReadByte();
 
-            bool result = WvsServer.Instance.AuthCenter.AddClient(c.Hwid);
+            bool result = WvsServer.Instance.AuthCenter.AddClient(hwid);
 
             if(result)
             {
-                //Logger.Write("Client {0} allowed", c.Name);
+                //Set hwid if login is successful.
+                //if you set it and you have failed addclient()
+                //when client dsiconencts it calls removeclient and decrements the client limit
+                c.Hwid = p.ReadMapleString();
                 c.SendLoginSuccess(region);
             }
             else
             {
-                //Logger.Write("Client {0} denied", c.Name);
-                c.SendLoginFailed(1); //1 = no available lisence
+                c.Dispose(); //client is useless
             }
         }
 

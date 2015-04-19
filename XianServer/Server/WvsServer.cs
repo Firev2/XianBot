@@ -111,7 +111,6 @@ namespace XianServer.Server
                         case "ping":
                             Ping();
                             break;
-                        case "clear":
                         case "cls":
                             Console.Clear();
                             break;

@@ -26,7 +26,7 @@ namespace XianServer.Auth
         {
             if(CurClients < MaxClients)
             {
-                CurClients++;
+                CurClients += 1;
                 return true;
             }
             
@@ -35,7 +35,7 @@ namespace XianServer.Auth
         public void RemoveEntry()
         {
             if (CurClients > 0)
-                CurClients--;
+                CurClients -= 1;
         }
 
         public void Update()
