@@ -15,6 +15,8 @@ namespace XianServer.Packet
         {
             using (var p = new BufferWriter(CServerMsg.LoginResponse))
             {
+                p.WriteInt(); //success code ( 0 )
+
                 OffsetTable offsets = null;
 
                 switch(region)
@@ -45,12 +47,33 @@ namespace XianServer.Packet
                 client.Send(p);
             }
         }
+        public static void SendLoginFailed(this Client client,int reason)
+        {
+            using (var p = new BufferWriter(CServerMsg.LoginResponse))
+            {
+                //1 = no license avaiable
+                p.WriteInt(reason); //failiure code
 
+                client.Send(p);
+            }
+        }
 
         public static void SendPing(this Client client)
         {
             using (var p = new BufferWriter(CServerMsg.Ping))
             {
+                
+                client.Send(p);
+            }
+        }
+
+        public static void SendMessage(this Client client, int DisplayType, string Name, string Message)
+        {
+            using (var p = new BufferWriter(CServerMsg.Message))
+            {
+                p.WriteInt(1);
+                p.WriteMapleString(Name);
+                p.WriteMapleString(Message);
                 client.Send(p);
             }
         }

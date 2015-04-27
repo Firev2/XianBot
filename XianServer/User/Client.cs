@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using XianServer.Buffer;
 using XianServer.Network;
 using XianServer.Packet;
@@ -10,18 +14,10 @@ namespace XianServer.User
     {
         private Session m_session;
 
-        public bool LoggedIn
-        {
-            get
-            {
-                return Hwid != null;
-            }
-        }
-
         public string Hwid { get; set; }
         public string Name { get; private set; }
 
-        public Client(Session session)
+        public Client (Session session)
         {
             m_session = session;
             m_session.OnPacket = OnPacket;
@@ -33,38 +29,31 @@ namespace XianServer.User
 
         private void OnPacket(byte[] buffer)
         {
+            var p = new Buffer.BufferReader(buffer);
+            short opcode = p.ReadShort();
+
             try
             {
-                var p = new Buffer.BufferReader(buffer);
-                short opcode = p.ReadShort();
-
-                if (LoggedIn == true)
+                switch (opcode)
                 {
-                    switch (opcode)
-                    {
-                        case CClientMsg.Ping:
-                            //ping
-                            break;
-                        case CClientMsg.JewShit:
-                            PacketHandler.HandleJewShit(this, p);
-                            break;
-                        default:
-                            {
-                                string buffer_string = BitConverter.ToString(buffer);
-                                Logger.Write("Unknown packet: {0}", buffer_string);
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    if (opcode == CClientMsg.LoginRequest)
+                    case CClientMsg.LoginRequest:
                         PacketHandler.HandleLoginRequest(this, p);
-                    else
-                        Dispose();
+                        break;
+                    case CClientMsg.Ping:
+                        //ping
+                        break;
+                    case CClientMsg.JewShit:
+                        PacketHandler.HandleJewShit(this, p);
+                        break;
+                    default:
+                        {
+                            string buffer_string = BitConverter.ToString(buffer);
+                            Logger.Write("Unknown packet: {0}", buffer_string);
+                            break;
+                        }
                 }
             }
-            catch (Exception ex)
+            catch( Exception ex)
             {
                 Logger.Exception(ex);
             }

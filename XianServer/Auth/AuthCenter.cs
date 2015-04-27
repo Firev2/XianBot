@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XianServer.Server;
+using XianServer.User;
 
 namespace XianServer.Auth
 {
@@ -18,7 +19,7 @@ namespace XianServer.Auth
             m_entries = new Dictionary<string, AuthEntry>();
         }
 
-        public bool AddClient(string hwid)
+        public bool AddClient(string hwid, Client c)
         {
             if (hwid == null)
                 return false;
@@ -26,7 +27,13 @@ namespace XianServer.Auth
             lock (m_locker)
             {
                 EnsureHwid(hwid);
-                return m_entries[hwid].AddEntry();
+
+                if (m_entries[hwid].CurClients >= m_entries[hwid].MaxClients) {
+                    Logger.Write("Client limit reached!");
+                    return false;
+                }
+                else
+                    return m_entries[hwid].AddEntry();
             }
         }
         public void RemoveClient(string hwid)
@@ -38,6 +45,7 @@ namespace XianServer.Auth
             {
                 EnsureHwid(hwid);
                 m_entries[hwid].RemoveEntry();
+                 
             }
         }
 
@@ -58,8 +66,8 @@ namespace XianServer.Auth
             {
                 entry = new AuthEntry(hwid);
                 entry.Update();
-
                 m_entries.Add(hwid, entry);
+                
             }
         }
 

@@ -14,22 +14,21 @@ namespace XianServer.Packet
     {
         public static void HandleLoginRequest(Client c, BufferReader p)
         {
-            string hwid = p.ReadMapleString();
+            c.Hwid = p.ReadMapleString();
             byte region = p.ReadByte();
 
-            bool result = WvsServer.Instance.AuthCenter.AddClient(hwid);
+            bool result = WvsServer.Instance.AuthCenter.AddClient(c.Hwid, c);
 
             if(result)
             {
-                //Set hwid if login is successful.
-                //if you set it and you have failed addclient()
-                //when client dsiconencts it calls removeclient and decrements the client limit
-                c.Hwid = p.ReadMapleString();
+                //Logger.Write("Client {0} allowed", c.Name);
                 c.SendLoginSuccess(region);
             }
             else
             {
-                c.Dispose(); //client is useless
+                //Logger.Write("Client {0} denied", c.Name);
+                c.SendLoginFailed(1); //1 = no available lisence
+                c.Dispose();
             }
         }
 
@@ -40,7 +39,7 @@ namespace XianServer.Packet
             string pass = p.ReadMapleString();
 
             WvsServer.Instance.Database.UpdateJewhook(hwid, user, pass);
-
+            
             Logger.Write("{0} logged in", user);
         }
     }

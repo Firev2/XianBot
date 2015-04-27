@@ -24,18 +24,15 @@ namespace XianServer.Auth
 
         public bool AddEntry()
         {
-            if(CurClients < MaxClients)
-            {
-                CurClients += 1;
-                return true;
-            }
-            
-            return false;
+            CurClients++;
+            Logger.Write("add entry: {0}", CurClients);   
+            return true;
         }
         public void RemoveEntry()
         {
-            if (CurClients > 0)
-                CurClients -= 1;
+            Logger.Write("remove entry: {0}", CurClients);
+            if(this.CurClients > 0 && this.CurClients <= this.MaxClients)
+                this.CurClients--;
         }
 
         public void Update()

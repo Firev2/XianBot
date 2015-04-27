@@ -51,14 +51,14 @@ namespace XianServer.Server
 
         public void AddClient(Client c)
         {
-            //Logger.Write("Client {0} connected", c.Name);
+            Logger.Write("Client {0} connected", c.Name);
             m_clients.Add(c);
             UpdateTitle();
         }
         public void RemoveClient(Client c)
         {
             AuthCenter.RemoveClient(c.Hwid);
-            //Logger.Write("Client {0} disconnected", c.Name);
+            Logger.Write("Client {0} disconnected", c.Name);
             m_clients.Remove(c);
             UpdateTitle();
         }
@@ -70,6 +70,7 @@ namespace XianServer.Server
 
                 m_clients.ToArray().ForEach((c) =>
                 {
+                  
                     c.SendPing();
                 });
             }
@@ -111,8 +112,29 @@ namespace XianServer.Server
                         case "ping":
                             Ping();
                             break;
+                        case "clear":
                         case "cls":
                             Console.Clear();
+                            break;
+                        case "message":
+
+                            
+                            if (m_clients.Count > 0)
+                            {
+                                m_clients.ToArray().ForEach((c) =>
+                                {
+                                    string msg = "";
+
+                                    for (int i = 2; i < tokens.Length; i++)
+                                    {
+                                        msg = msg + tokens[i];
+                                        msg = msg + " ";
+                                    }
+
+
+                                    c.SendMessage(1, tokens[1], msg);
+                                });
+                            }
                             break;
                     }
                 }

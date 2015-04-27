@@ -4,6 +4,7 @@
     {
         public const short LoginResponse = 0;
         public const short Ping = 1;
+        public const short Message = 2;
     }
     public static class CClientMsg
     {

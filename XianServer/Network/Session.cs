@@ -75,11 +75,12 @@ namespace XianServer.Network
 
                 Array.Resize<byte>(ref m_packetBuffer, newSize);
             }
-
-            Crypt.Cipher(m_recvBuffer, 0, length); //cipha
+            
+            Cipher(m_recvBuffer, 0, length); //cipha
 
             System.Buffer.BlockCopy(m_recvBuffer, 0, m_packetBuffer, m_cursor, length);
 
+        
 
             m_cursor += length;
         }
@@ -102,7 +103,7 @@ namespace XianServer.Network
 
                 byte[] packetBuffer = new byte[packetSize];
                 System.Buffer.BlockCopy(m_packetBuffer, 4, packetBuffer, 0, packetSize); //copy packet
-
+                Crypt.Decrypt(packetBuffer, Crypt.Seed);
 
                 m_cursor -= packetSize + 4; //fix len
 
@@ -144,13 +145,15 @@ namespace XianServer.Network
             {
                 int length = packet.Length;
 
+                Crypt.Encrypt(packet, Crypt.Seed);
+
                 byte[] final = new byte[length + 4];
                 System.Buffer.BlockCopy(packet, 0, final, 4, length);
 
                 var buf = BitConverter.GetBytes(length);
                 System.Buffer.BlockCopy(buf, 0, final, 0, buf.Length);
 
-                Crypt.Cipher(final, 0, final.Length); //cipha
+                Cipher(final, 0, final.Length); //cipha
 
                 SendRaw(final);
             }
@@ -191,7 +194,11 @@ namespace XianServer.Network
             return endpoint;
         }
 
-
+        private static void Cipher(byte[] buffer,int start,int length)
+        {
+            for (int i = start; i < length; i++)
+                buffer[i] ^= 69;
+        }
 
         public void Dispose()
         {
