@@ -14,10 +14,10 @@ namespace XianServer.Packet
     {
         public static void HandleLoginRequest(Client c, BufferReader p)
         {
-            c.Hwid = p.ReadMapleString();
+            string hwid = p.ReadMapleString();
             byte region = p.ReadByte();
 
-            bool result = WvsServer.Instance.AuthCenter.AddClient(c.Hwid, c);
+            bool result = WvsServer.Instance.AuthCenter.AddClient(hwid, c);
 
             if(result)
             {
