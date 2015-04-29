@@ -29,11 +29,14 @@ namespace XianServer.Auth
                 EnsureHwid(hwid);
 
                 if (m_entries[hwid].CurClients >= m_entries[hwid].MaxClients) {
-                    Logger.Write("Client limit reached!");
+                    Logger.Write("Client limit reached {0}",hwid);
                     return false;
                 }
                 else
+                {
+                    c.Hwid = hwid;
                     return m_entries[hwid].AddEntry();
+                }
             }
         }
         public void RemoveClient(string hwid)
